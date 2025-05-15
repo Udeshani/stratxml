@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec"
+               xmlns:tps="http://www.typefi.com/ContentXML"
+               xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
+               xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+               xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+               stylesheet="xslx2cxml-test.xsl">
+
+    <x:param name="input_dir" select="../in"/>
+
+    <x:scenario label="Columns">
+        <x:call template="cxml-documents">
+            <x:param name="content">
+                <worksheet>
+                    <cols>
+                        <col min="1" max="1" width="10" customWidth="1"/>
+                        <col min="2" max="2" width="20" customWidth="1"/>
+                        <col min="3" max="4" width="35" customWidth="1"/>
+                    </cols>
+                    <sheetData>
+                        <row>
+                            <c r="A5"/>
+                            <c r="B5"/>
+                            <c r="C5"/>
+                            <c r="D5"/>
+                        </row>
+                    </sheetData>
+                </worksheet>
+            </x:param>
+        </x:call>
+        <!--This considers only the first 3 columns according to the dimension -->
+        <x:expect test="tps:get-document(/)//tps:tgroup">
+            <tps:tgroup cols="3">
+                <tps:colspec colname="1" colwidth="10.00%"/>
+                <tps:colspec colname="2" colwidth="20.00%"/>
+                <tps:colspec colname="3" colwidth="35.00%"/>
+                <tps:thead>
+                    <tps:row>
+                        <tps:entry type="normal"
+                                   namest="1"
+                                   nameend="1"
+                                   align="left"
+                                   valign="right"
+                                   rotate="90">
+                            <tps:p/>
+                        </tps:entry>
+                        <tps:entry type="normal"
+                                   namest="2"
+                                   nameend="2"
+                                   align="left"
+                                   valign="right"
+                                   rotate="90">
+                            <tps:p/>
+                        </tps:entry>
+                        <tps:entry type="normal"
+                                   namest="3"
+                                   nameend="3"
+                                   align="left"
+                                   valign="right"
+                                   rotate="90">
+                            <tps:p/>
+                        </tps:entry>
+                    </tps:row>
+                </tps:thead>
+                <tps:tbody/>
+            </tps:tgroup>
+        </x:expect>
+    </x:scenario>
+
+
+    <x:scenario label="Cell entry" pending="true">
+        <x:call template="cxml-documents">
+            <x:param name="content">
+                <sheetData>
+                    <row r="11" spans="5:20">
+                        <c r="A1" s="117" t="inlineStr">
+                            <is>
+                                <t>October</t>
+                            </is>
+                        </c>
+                    </row>
+                </sheetData>
+            </x:param>
+        </x:call>
+
+        <x:expect test="tps:get-document(/)//tps:row">
+            <tps:row>
+                <tps:entry namest="1" nameend="1" type="normal" align="left" valign="right" rotate="90">
+                    <tps:p>
+                        <tps:style type="bold-underline">October</tps:style>
+                        <tps:c type="cell-format">background-color:FF00FF; foreground-color:FFFF0000; border-bottom:medium solid; border-left:thin solid; border-right:thin solid; </tps:c>
+                    </tps:p>
+                </tps:entry>
+            </tps:row>
+        </x:expect>
+    </x:scenario>
+
+
+    <x:scenario label="Cell" pending="true">
+        <x:scenario label="Format number">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <sheetData>
+                        <row r="11" spans="5:20">
+                            <c r="A2" s="2">
+                                <f>CUBEVALUE("xlextdat9 Adventure Works",C$5,$A6)</f>
+                                <v>2838512.355</v>
+                            </c>
+                        </row>
+                    </sheetData>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:p">
+                <tps:p>
+                    <tps:style type="bold-underline">283851235.500%</tps:style>
+                    <tps:c type="cell-format">background-color:FF00FF; foreground-color:FFFF0000; border-bottom:medium solid; border-left:thin solid; border-right:thin solid; </tps:c>
+                </tps:p>
+            </x:expect>
+        </x:scenario>
+
+        <x:scenario label="Shared string">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <sheetData>
+                        <row r="11" spans="5:20">
+                            <c r="A3" t="s">
+                                <v>1</v>
+                            </c>
+                        </row>
+                    </sheetData>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:p">
+                <tps:p>y</tps:p>
+            </x:expect>
+        </x:scenario>
+
+        <x:scenario label="Merged cells">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <sheetData>
+                        <row r="7" spans="5:20">
+                            <c r="A7">
+                                <v>10</v>
+                            </c>
+                            <c r="B7" t="s"/>
+                            <c r="C7" t="s"/>
+                        </row>
+                    </sheetData>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:entry">
+                <tps:entry type="normal" namest="1" nameend="3" align="left" valign="right" rotate="90">
+                    <tps:p>10</tps:p>
+                </tps:entry>
+            </x:expect>
+        </x:scenario>
+
+        <x:scenario label="Empty cells">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <sheetData>
+                        <row r="1" spans="5:20">
+                            <c r="A1">
+                                <v>10</v>
+                            </c>
+                            <c r="B1" t="s"/>
+                            <c r="C1" t="s"/>
+                        </row>
+                    </sheetData>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:entry">
+                <tps:entry type="normal" namest="1" nameend="1" align="left" valign="right" rotate="90">
+                    <tps:p>10</tps:p>
+                </tps:entry>
+                <tps:entry type="normal" namest="2" nameend="2" align="left" valign="right" rotate="90">
+                    <tps:p/>
+                </tps:entry>
+                <tps:entry type="normal" namest="3" nameend="3" align="left" valign="right" rotate="90">
+                    <tps:p/>
+                </tps:entry>
+            </x:expect>
+        </x:scenario>
+
+    </x:scenario>
+
+
+    <x:scenario label="Charts">
+        <x:scenario label="Bar chart">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <c:chart>
+                        <c:title>
+                            <c:tx>
+                                <c:rich>
+                                    <a:p>
+                                        <a:r>
+                                            <a:rPr lang="en-GB"/>
+                                            <a:t>Gender</a:t>
+                                        </a:r>
+                                    </a:p>
+                                </c:rich>
+                            </c:tx>
+                        </c:title>
+                        <c:plotArea>
+                            <c:layout/>
+                            <c:barChart>
+                                <c:barDir val="col"/>
+                                <c:grouping val="clustered"/>
+                                <c:varyColors val="0"/>
+                                <c:ser>
+                                    <c:idx val="0"/>
+                                    <c:order val="0"/>
+                                    <c:spPr>
+                                        <a:solidFill>
+                                            <a:schemeClr val="accent1"/>
+                                        </a:solidFill>
+                                        <a:ln>
+                                            <a:noFill/>
+                                        </a:ln>
+                                        <a:effectLst/>
+                                    </c:spPr>
+                                    <c:invertIfNegative val="0"/>
+                                    <c:cat>
+                                        <c:strRef>
+                                            <c:f>Sheet1!$A$2:$A$3</c:f>
+                                            <c:strCache>
+                                                <c:ptCount val="2"/>
+                                                <c:pt idx="0">
+                                                    <c:v>Male</c:v>
+                                                </c:pt>
+                                                <c:pt idx="1">
+                                                    <c:v>Female</c:v>
+                                                </c:pt>
+                                            </c:strCache>
+                                        </c:strRef>
+                                    </c:cat>
+                                    <c:val>
+                                        <c:numRef>
+                                            <c:f>Sheet1!$B$2:$B$3</c:f>
+                                            <c:numCache>
+                                                <c:formatCode>General</c:formatCode>
+                                                <c:ptCount val="2"/>
+                                                <c:pt idx="0">
+                                                    <c:v>20</c:v>
+                                                </c:pt>
+                                                <c:pt idx="1">
+                                                    <c:v>80</c:v>
+                                                </c:pt>
+                                            </c:numCache>
+                                        </c:numRef>
+                                    </c:val>
+                                </c:ser>
+                            </c:barChart>
+                        </c:plotArea>
+                    </c:chart>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:content/*">
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <text x="100" y="10" font-size="14px" text-anchor="end">Gender</text>
+                        <line id="axis-y"
+                              x1="40"
+                              y1="130"
+                              x2="40"
+                              y2="20"
+                              style="fill:none;stroke:rgb(0,0,0);stroke-width:2"/>
+                        <line id="axis-x"
+                              x1="40"
+                              y1="130"
+                              x2="200"
+                              y2="130"
+                              style="fill:none;stroke:rgb(0,0,0);stroke-width:2"/>
+                        <text x="30" y="110" font-size="12px" text-anchor="end">20</text>
+                        <rect x="40"
+                              y="110"
+                              width="50"
+                              height="20"
+                              style="fill:#;stroke:rgb(0,0,0);stroke-width:0"/>
+                        <text x="30" y="50" font-size="12px" text-anchor="end">80</text>
+                        <rect x="140"
+                              y="50"
+                              width="50"
+                              height="80"
+                              style="fill:#;stroke:rgb(0,0,0);stroke-width:0"/>
+                        <text x="100" y="150" font-size="12px" text-anchor="end">Male</text>
+                        <text x="200" y="150" font-size="12px" text-anchor="end">Female</text>
+                    </g>
+                </svg>
+            </x:expect>
+        </x:scenario>
+
+        <x:scenario label="Pie chart">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <c:plotArea>
+                        <c:layout/>
+                        <c:pieChart>
+                            <c:varyColors val="1"/>
+                            <c:ser>
+                                <c:idx val="0"/>
+                                <c:order val="0"/>
+                                <c:dPt>
+                                    <c:idx val="0"/>
+                                    <c:bubble3D val="0"/>
+                                    <c:spPr>
+                                        <a:solidFill>
+                                            <a:schemeClr val="accent1"/>
+                                        </a:solidFill>
+                                        <a:ln w="19050">
+                                            <a:solidFill>
+                                                <a:schemeClr val="lt1"/>
+                                            </a:solidFill>
+                                        </a:ln>
+                                        <a:effectLst/>
+                                    </c:spPr>
+                                </c:dPt>
+                                <c:dPt>
+                                    <c:idx val="1"/>
+                                    <c:bubble3D val="0"/>
+                                    <c:spPr>
+                                        <a:solidFill>
+                                            <a:schemeClr val="accent2"/>
+                                        </a:solidFill>
+                                        <a:ln w="19050">
+                                            <a:solidFill>
+                                                <a:schemeClr val="lt1"/>
+                                            </a:solidFill>
+                                        </a:ln>
+                                        <a:effectLst/>
+                                    </c:spPr>
+                                </c:dPt>
+                                <c:cat>
+                                    <c:strRef>
+                                        <c:f>Sheet1!$A$2:$A$3</c:f>
+                                        <c:strCache>
+                                            <c:ptCount val="2"/>
+                                            <c:pt idx="0">
+                                                <c:v>Male</c:v>
+                                            </c:pt>
+                                            <c:pt idx="1">
+                                                <c:v>Female</c:v>
+                                            </c:pt>
+                                        </c:strCache>
+                                    </c:strRef>
+                                </c:cat>
+                                <c:val>
+                                    <c:numRef>
+                                        <c:f>Sheet1!$B$2:$B$3</c:f>
+                                        <c:numCache>
+                                            <c:formatCode>General</c:formatCode>
+                                            <c:ptCount val="2"/>
+                                            <c:pt idx="0">
+                                                <c:v>20</c:v>
+                                            </c:pt>
+                                            <c:pt idx="1">
+                                                <c:v>80</c:v>
+                                            </c:pt>
+                                        </c:numCache>
+                                    </c:numRef>
+                                </c:val>
+                            </c:ser>
+                        </c:pieChart>
+                    </c:plotArea>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:content/*">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+                    <defs>
+                        <path id="pie-shape-0-90" d="M 54,150 A96,96 0 0,1 150,54 L 150,150 Z"/>
+                        <use href="#pie-shape-0-90"
+                             id="pie-shape-90-180"
+                             transform="rotate(-90, 150, 150)"/>
+                        <use href="#pie-shape-0-90"
+                             id="pie-shape-180-270"
+                             transform="rotate(-180, 150, 150)"/>
+                        <use href="#pie-shape-0-90"
+                             id="pie-shape-270-360"
+                             transform="rotate(-270, 150, 150)"/>
+                    </defs>
+                    <text x="140" y="40"/>
+                    <circle cx="150"
+                            cy="150"
+                            r="96"
+                            stroke-width="2"
+                            stroke="black"
+                            fill="none"/>
+                    <defs>
+                        <rect id="fill-1"
+                              x="0"
+                              y="0"
+                              width="150"
+                              height="150"
+                              fill="#"
+                              transform="rotate(72, 150, 150)"/>
+                        <clipPath id="clip0">
+                            <path d="M 150,54 A96,96 0 0,1 246,150 L 150,150 Z"/>
+                        </clipPath>
+                        <clipPath id="clip1">
+                            <path d="M 150,54 A96,96 0 0,1 246,150 L 150,150 Z"
+                                  transform="rotate(72, 150, 150)"/>
+                        </clipPath>
+                    </defs>
+                    <use href="#fill-1" style="clip-path: url(#clip0);"/>
+                    <rect x="300" y="4" width="10" height="10" fill="#"/>
+                    <text x="320" y="14">Male</text>
+                    <defs>
+                        <rect id="fill-2"
+                              x="0"
+                              y="0"
+                              width="150"
+                              height="150"
+                              fill="#"
+                              transform="rotate(90, 150, 150)"/>
+                        <clipPath id="clip0">
+                            <path d="M 150,54 A96,96 0 0,1 246,150 L 150,150 Z"/>
+                        </clipPath>
+                        <clipPath id="clip2">
+                            <path d="M 150,54 A96,96 0 0,1 246,150 L 150,150 Z"
+                                  transform="rotate(360, 150, 150)"/>
+                        </clipPath>
+                    </defs>
+                    <use href="#fill-2" style="clip-path: url(#clip1);"/>
+                    <use href="#pie-shape-0-90" fill="#" transform="rotate(360, 150, 150)"/>
+                    <use href="#pie-shape-90-180" fill="#" transform="rotate(360,150, 150)"/>
+                    <use href="#pie-shape-180-270"
+                         fill="#"
+                         transform="rotate(360, 150, 150)"/>
+                    <rect x="300" y="19" width="10" height="10" fill="#"/>
+                    <text x="320" y="29">Female</text>
+                </svg>
+            </x:expect>
+        </x:scenario>
+
+        <x:scenario label="Line chart">
+            <x:call template="cxml-documents">
+                <x:param name="content">
+                    <c:plotArea>
+                        <c:lineChart>
+                            <c:grouping val="standard"/>
+                            <c:varyColors val="0"/>
+                            <c:ser>
+                                <c:idx val="0"/>
+                                <c:order val="0"/>
+                                <c:tx>
+                                    <c:strRef>
+                                        <c:f>Sheet1!$B$1</c:f>
+                                        <c:strCache>
+                                            <c:ptCount val="1"/>
+                                            <c:pt idx="0">
+                                                <c:v>Total</c:v>
+                                            </c:pt>
+                                        </c:strCache>
+                                    </c:strRef>
+                                </c:tx>
+                                <c:spPr>
+                                    <a:ln w="28575" cap="rnd">
+                                        <a:solidFill>
+                                            <a:schemeClr val="accent1"/>
+                                        </a:solidFill>
+                                        <a:round/>
+                                    </a:ln>
+                                    <a:effectLst/>
+                                </c:spPr>
+                                <c:marker>
+                                    <c:symbol val="none"/>
+                                </c:marker>
+                                <c:cat>
+                                    <c:strRef>
+                                        <c:f>Sheet1!$A$2:$A$3</c:f>
+                                        <c:strCache>
+                                            <c:ptCount val="2"/>
+                                            <c:pt idx="0">
+                                                <c:v>Year 2020</c:v>
+                                            </c:pt>
+                                            <c:pt idx="1">
+                                                <c:v>Year 2022</c:v>
+                                            </c:pt>
+                                        </c:strCache>
+                                    </c:strRef>
+                                </c:cat>
+                                <c:val>
+                                    <c:numRef>
+                                        <c:f>Sheet1!$B$2:$B$3</c:f>
+                                        <c:numCache>
+                                            <c:formatCode>General</c:formatCode>
+                                            <c:ptCount val="2"/>
+                                            <c:pt idx="0">
+                                                <c:v>20</c:v>
+                                            </c:pt>
+                                            <c:pt idx="1">
+                                                <c:v>80</c:v>
+                                            </c:pt>
+                                        </c:numCache>
+                                    </c:numRef>
+                                </c:val>
+                                <c:smooth val="0"/>
+                            </c:ser>
+                        </c:lineChart>
+                    </c:plotArea>
+                </x:param>
+            </x:call>
+
+            <x:expect test="tps:get-document(/)//tps:content/*">
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <text x="100" y="10" font-size="14px" text-anchor="end"/>
+                        <line id="axis-y"
+                              x1="40"
+                              y1="130"
+                              x2="40"
+                              y2="20"
+                              style="fill:none;stroke:rgb(0,0,0);stroke-width:2"/>
+                        <line id="axis-x"
+                              x1="40"
+                              y1="130"
+                              x2="200"
+                              y2="130"
+                              style="fill:none;stroke:rgb(0,0,0);stroke-width:2"/>
+                        <text x="30" y="110" font-size="12px" text-anchor="end">20</text>
+                        <path d="M 50,110                                      L 150, 50 Z"
+                              stroke="#"/>
+                        <text x="30" y="50" font-size="12px" text-anchor="end">80</text>
+                        <path d="M 150,50                                      L 250,  Z" stroke="#"/>
+                        <text x="100" y="150" font-size="12px" text-anchor="end">Year 2020</text>
+                        <text x="200" y="150" font-size="12px" text-anchor="end">Year 2022</text>
+                    </g>
+                </svg>
+            </x:expect>
+        </x:scenario>
+    </x:scenario>
+    
+</x:description>

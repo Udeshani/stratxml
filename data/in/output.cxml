@@ -1,0 +1,78 @@
+<PerformancePlanOrReport Type="Strategic_Plan" xmlns="urn:ISO:std:iso:17469:tech:xsd:PerformancePlanOrReport" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ISO:std:iso:17469:tech:xsd:PerformancePlanOrReport http://stratml.us/references/PerformancePlanOrReport20160216.xsd">
+    <Name></Name>
+    <StrategicPlanCore>
+        <Organization>
+            <Name>U.S. Department of Agriculture</Name>
+            <Acronym>USDA</Acronym>
+            <Identifier>_10bc70b8-a59e-46ba-9caa-7d7b219537ef</Identifier>
+            <Description />
+            <Stakeholder StakeholderTypeType="Generic_Group">
+                <Name>Farmers</Name>
+                <Description />
+                <Role>
+                    <Name />
+                    <Description />
+                </Role>
+            </Stakeholder>
+            <Stakeholder StakeholderTypeType="Generic_Group">
+                <Name>Ranchers</Name>
+                <Description />
+                <Role>
+                    <Name />
+                    <Description />
+                </Role>
+            </Stakeholder>
+            <Stakeholder StakeholderTypeType="Generic_Group">
+                <Name>Foresters</Name>
+                <Description />
+                <Role>
+                    <Name />
+                    <Description />
+                </Role>
+            </Stakeholder>
+        </Organization>
+        <Goal>
+            <Name/>
+            <Description></Description>
+            <SequenceIndicator/>
+            <Stakeholder>
+                <Name/>
+                <Description/>
+                <Role>
+                    <Name/>
+                    <Description/>
+                </Role>
+            </Stakeholder>
+            <OtherInformation></OtherInformation>
+            <Objective>
+                <Description/>
+                <SequenceIndicator/>
+                <OtherInformation></OtherInformation>
+                <PerformanceIndicator>
+                    <SequenceIndicator>Performance Measure number corresponding to column J</SequenceIndicator>
+                    <MeasurementDimension/>
+                    <UnitOfMeasurement>Performance Measure Value Type</UnitOfMeasurement>
+                    <Identifier>test1</Identifier>
+                    <Relationship>
+                        <Identifier>test2</Identifier>
+                        <ReferentIdentifier>[To_be_inserted_by_user]</ReferentIdentifier>
+                        <Name>Supports Enterprise Objective</Name>
+                        <Description>Statewide Enterprise Objective from the drop down menu.</Description>
+                    </Relationship>
+                    <MeasurementInstance>
+                        <TargetResult>
+                            <Description>Performance Measure description aligned with corresponding strategy listed in column H.</Description>
+      
+                        </TargetResult>
+                        <ActualResult>
+                            <Description>[To be determined]</Description>
+                      
+                        </ActualResult>
+                    </MeasurementInstance>
+                    <OtherInformation/>
+                </PerformanceIndicator>
+
+            </Objective>
+        </Goal>
+    </StrategicPlanCore>
+</PerformancePlanOrReport>

@@ -1,0 +1,109 @@
+<!--
+# =============================================================================
+# Copyright © 2021 Typefi Systems. All rights reserved.
+#
+# Unless required by applicable law or agreed to in writing, software
+# is distributed on an "as is" basis, without warranties or conditions
+# of any kind, either express or implied.
+# =============================================================================
+-->
+<project name="Excel 2 cxml" default="run">
+
+    <property environment="env"/>
+    <property file="local.properties"/>
+    <property file="build.properties"/>
+
+    <typedef file="${development.resources.dir}/for.xml" onerror="failall"/>
+    <import file="${development.resources.dir}/xspec-2.1.4/build.xml"/>
+    <import file="${development.resources.dir}/xspec.xml"/>
+
+    <path id="project.classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+
+
+    <target name="clean">
+        <description>Clean the build folder.</description>
+        <delete dir="${job.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+
+    <target name="run" depends="dist">
+        <sequential>
+             <ant dir="${build.dir}" usenativebasedir="true" inheritall="false">
+                <propertyset>
+                    <propertyref name="input.dir"/>
+                    <propertyref name="debug"/>
+                </propertyset>
+            </ant>
+        </sequential>
+    </target>
+
+
+    <target name="dist" depends="test">
+       <copy todir="${build.dir}/src">
+           <fileset dir="${src.dir}"/>
+       </copy>
+    </target>
+
+
+    <target name="test" depends="build">
+        <description>Execute XSpec tests.</description>
+
+        <sequential>
+
+        </sequential>
+    </target>
+
+
+    <target name="build" depends="clean">
+        <copy todir="${build.dir}/lib">
+            <fileset dir="${lib.dir}"/>
+        </copy>
+        <copy todir="${build.dir}">
+            <fileset dir="${resources.dir}/deliverable"/>
+        </copy>
+    </target>
+
+
+    <target name="xspec-test">
+        <path id="xspec.additional.classpath" refid="project.classpath"/>
+        <pathconvert property="xspec.additional.classpath" refid="xspec.additional.classpath"/>
+
+        <antcall target="xspec" inheritall="false">
+            <param name="xspec.xml" value="${filepath}"/>
+            <propertyset>
+                <propertyref name="xspec.additional.classpath"/>
+            </propertyset>
+            <reference refid="xspec.additional.classpath"/>
+        </antcall>
+    </target>
+
+
+    <macrodef name="clean-dir">
+        <attribute name="dir"/>
+
+        <sequential>
+            <description>
+                Delete all contents of the directory without deleting the directory itself
+                because it might be open somewhere and locked
+            </description>
+
+            <delete dir="@{dir}" includeemptydirs="true">
+                <fileset dir="@{dir}" includes="**/*" defaultexcludes="false" erroronmissingdir="false"/>
+            </delete>
+        </sequential>
+    </macrodef>
+
+
+    <macrodef name="expand-property">
+        <attribute name="name"/>
+        <attribute name="pattern"/>
+
+        <sequential>
+            <property name="@{name}" value="@{pattern}"/>
+        </sequential>
+    </macrodef>
+
+</project>

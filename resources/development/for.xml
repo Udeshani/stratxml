@@ -1,0 +1,46 @@
+<antlib>
+
+    <scriptdef name="for" language="javascript">
+        <attribute name="target"/>
+        <element name="fileset" type="fileset"/>
+        <![CDATA[
+        var File = Java.type("java.io.File");
+        var filesets = elements.get("fileset");
+        var files = [];
+
+        for (var i=0; i<filesets.size(); ++i) {
+            var fileset = filesets.get(i);
+            // var dir = fileset.getDir();
+            var scanner = fileset.getDirectoryScanner(project);
+            var dir = scanner.getBasedir();
+            scanner.scan();
+            var filesetFiles = scanner.getIncludedFiles();
+
+            for (var j=0; j<filesetFiles.length; ++j) {
+                files.push({dir: dir, name: filesetFiles[j]});
+            }
+        }
+
+        target = attributes.get("target");
+
+        var fileCount = files.length;
+        project.setProperty("filecount", fileCount);
+
+        for (var i=0; i<fileCount; ++i) {
+            var entry = files[i];
+            var dir = entry.dir;
+            var name = entry.name;
+            var file = new File(dir, name);
+            var filepath = file.getCanonicalPath();
+
+            project.setProperty("dirname", dir);
+            project.setProperty("filename", name);
+            project.setProperty("filepath", filepath);
+            project.setProperty("filenumber", 1+i);
+
+            self.project.executeTarget(target);
+        }
+        ]]>
+    </scriptdef>
+
+</antlib>

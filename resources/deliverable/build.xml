@@ -1,0 +1,136 @@
+<!--
+# =============================================================================
+# Copyright © 2021 Typefi Systems. All rights reserved.
+#
+# Unless required by applicable law or agreed to in writing, software
+# is distributed on an "as is" basis, without warranties or conditions
+# of any kind, either express or implied.
+# =============================================================================
+-->
+<project name="excel 2 cxml" default="all">
+    <property file="build.properties"/>
+
+    <property name="input.dir.location"  location="${input.dir}"/>
+    <property name="output.dir.location" location="${output.dir}"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+    <pathconvert property="classpath" refid="classpath"/>
+
+    <target name="all" depends="echo-properties, check-properties, main-target"/>
+
+    <target name="check-properties">
+        <check-parameter property="input.dir" type="dir" user-description="path to input directory"/>
+        <check-property property="output.dir" user-description="path to output directory"/>
+    </target>
+
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath refid="classpath"/>
+    </taskdef>
+
+
+    <target name="echo-properties">
+        <echo level="info">Parameters and evaluated paths:</echo>
+        <echo level="info">input.dir           = ${input.dir}</echo>
+        <echo level="info">output.dir          = ${output.dir}</echo>
+        <echo level="info">input.dir.location  = ${input.dir.location}</echo>
+        <echo level="info">output.dir.location = ${output.dir.location}</echo>
+    </target>
+
+    <target name="main-target">
+        <foreach target="convert" inheritall="true" param="file.name">
+            <path>
+                <fileset dir="${input.dir}">
+                    <include name="input.xlsx"/>
+                </fileset>
+            </path>
+        </foreach>
+    </target>
+
+
+    <target name="convert">
+        <!-- Postprocessing omitted if empty -->
+        <property name="cxml.postprocessing.xsl" value=""/>
+
+        <echo>Conversion started for the file ${file.name}</echo>
+
+        <propertyregex property="filename"
+                       input="${file.name}"
+                       regexp="(.*)/(.*).xlsx"
+                       select="\2"
+                       casesensitive="false" />
+
+        <fail message="Input DOCX file not found: ${input.dir}">
+            <condition>
+                <not>
+                    <available file="${input.dir}"/>
+                </not>
+            </condition>
+        </fail>
+
+        <delete dir="${tmp.dir}"/>
+
+        <echo>ANT is running calabash ${filename}</echo>
+
+        <java classname="com.xmlcalabash.drivers.Main" failonerror="true" fork="true">
+            <classpath>
+                <fileset dir="${lib.dir}/xmlcalabash-1.4.1-100/lib" includes="*.jar"/>
+                <path location="${lib.dir}/xmlcalabash-1.4.1-100/xmlcalabash-1.4.1-100.jar"/>
+            </classpath>
+            <arg line='--with-param param@input="${file.name}"'/>
+            <arg line='--with-param param@output="../output/${filename}.xml"'/>
+            <arg line='--with-param param@xsl="${xsl.entry.file}"'/>
+            <arg line='"${xpl.file}"'/>
+        </java>
+
+        <echo>ANT build complete</echo>
+    </target>
+
+
+    <macrodef name="check-parameter">
+        <attribute name="property"/>
+        <attribute name="type"/>
+        <attribute name="user-description"/>
+
+        <sequential>
+            <check-property property="@{property}" user-description="@{user-description}"/>
+            <check-if-exists path="${@{property}}" type="@{type}" user-description="@{user-description}"/>
+        </sequential>
+    </macrodef>
+
+
+    <macrodef name="check-property">
+        <attribute name="property"/>
+        <attribute name="user-description"/>
+
+        <sequential>
+            <fail message='Parameter "@{property}" not set. It should contain a @{user-description}'>
+                <condition>
+                    <not>
+                        <isset property="@{property}"/>
+                    </not>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+
+    <macrodef name="check-if-exists">
+        <attribute name="path"/>
+        <attribute name="type"/>
+        <attribute name="user-description"/>
+
+        <sequential>
+            <fail message='@{user-description} not found at "@{path}"'>
+                <condition>
+                    <not>
+                        <available file="@{path}" type="@{type}"/>
+                    </not>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+</project>

@@ -1,0 +1,64 @@
+<project name="Macro and target which trigger XSpec tests on a set of files in folder"
+         xmlns:if="ant:if">
+
+    <macrodef name="xspec-tests">
+        <attribute name="dir"/>
+        <attribute name="includes" default="*.xspec"/>
+
+        <sequential>
+            <for target="xspec-test">
+                <fileset dir="@{dir}" includes="@{includes}"/>
+            </for>
+        </sequential>
+    </macrodef>
+
+
+    <target name="xspec-test">
+        <xspec xspec.xml="${filepath}"/>
+    </target>
+
+
+    <macrodef name="saxon-xslt">
+        <attribute name="in" />
+        <attribute name="out" />
+        <attribute name="style" />
+        <attribute name="ignore-catalog" default="false" />
+
+        <element name="factory-elements" optional="true" />
+        <element name="xslt-elements" optional="true" />
+
+        <sequential>
+            <local name="enable-catalog" />
+            <condition property="enable-catalog" else="false">
+                <and>
+                    <isfalse value="@{ignore-catalog}" />
+                    <isset property="xspec.catalog.files" />
+                </and>
+            </condition>
+
+            <xslt in="@{in}" out="@{out}" style="@{style}" force="true" classpathref="xspec.additional.classpath">
+                <factory name="net.sf.saxon.TransformerFactoryImpl">
+                    <factory-elements />
+
+                    <!-- Place <attribute> after <factory-elements/>, otherwise xspec.compiler.saxon.config
+                      seems to reset preceding <attribute>. -->
+                    <attribute name="http://saxon.sf.net/feature/xml-version"
+                               value="${xspec.xml.version}"
+                               if:set="xspec.xml.version" />
+
+                    <!-- For debugging -->
+                    <!--<attribute name="http://saxon.sf.net/feature/timing"
+                               value="true"/>-->
+                </factory>
+
+                <xmlcatalog if:true="${enable-catalog}">
+                    <catalogpath path="${xspec.catalog.files}" />
+                </xmlcatalog>
+
+                <xslt-elements />
+            </xslt>
+        </sequential>
+    </macrodef>
+
+
+</project>
