@@ -83,22 +83,22 @@
 
         <xsl:variable name="single-quote"><xsl:text>'</xsl:text></xsl:variable>
 
-        <xsl:result-document href="sitemap.xml">
-            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                <xsl:for-each select="2 to 166">
-                    <xsl:variable name="cur-row" select="."/>
-                        <url><loc><xsl:value-of select="'https://stratml.us/gaya/HFI/'||replace(replace(replace($main-content//tgroup/tbody/row[$cur-row]/entry[3], ' ', '_'), ',|\.', ''), $single-quote ,'')||'.xml'"/></loc></url>
-                </xsl:for-each>
-            </urlset>
-        </xsl:result-document>
+<!--        <xsl:result-document href="sitemap.xml">-->
+<!--            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">-->
+<!--                <xsl:for-each select="2 to 166">-->
+<!--                    <xsl:variable name="cur-row" select="."/>-->
+<!--                        <url><loc><xsl:value-of select="'https://stratml.us/gaya/HFI/'||replace(replace(replace($main-content//tgroup/tbody/row[$cur-row]/entry[3], ' ', '_'), ',|\.', ''), $single-quote ,'')||'.xml'"/></loc></url>-->
+<!--                </xsl:for-each>-->
+<!--            </urlset>-->
+<!--        </xsl:result-document>-->
 
-        <xsl:for-each select="2 to 166">
-            <xsl:variable name="cur-row" select="."/>
-<xsl:message select="$cur-row"/>
+<!--        <xsl:for-each select="distinct-values($main-content//tgroup/tbody/row/entry[3])[2]">-->
+            <xsl:variable name="cur-country" select="$main-content//tgroup/tbody/row[2]/entry[3]"/>
+<xsl:message select="$cur-country"/>
 
-            <xsl:variable name="filename" select="replace(replace(replace($main-content//tgroup/tbody/row[$cur-row]/entry[3], ' ', '_'), ',|\.', ''), $single-quote ,'')"/>
+<!--            <xsl:variable name="filename" select="replace(replace(replace($main-content//tgroup/tbody/row[$cur-row]/entry[3], ' ', '_'), ',|\.', ''), $single-quote ,'')"/>-->
 
-            <xsl:result-document href="final/{$filename}.xml">
+            <xsl:result-document href="final/{$cur-country}.xml">
                 <xsl:processing-instruction name="xml-stylesheet">
                     <xsl:text>type="text/xsl" href="part2stratml.xsl"</xsl:text>
                 </xsl:processing-instruction>
@@ -108,7 +108,7 @@
                                          xsi:schemaLocation="urn:ISO:std:iso:17469:tech:xsd:PerformancePlanOrReport http://stratml.us/references/PerformancePlanOrReport20160216.xsd"
                                          Type="Performance_Plan">
                     <xsl:apply-templates select="$main-content">
-                        <xsl:with-param name="country-code" select="$cur-row"/>
+                        <xsl:with-param name="country-code" select="$cur-country"/>
                     </xsl:apply-templates>
 
                     <AdministrativeInformation>
@@ -128,7 +128,7 @@
                 </PerformancePlanOrReport>
             </xsl:result-document>
 
-        </xsl:for-each>
+<!--        </xsl:for-each>-->
 
         <Submitter>
             <Identifier>_a7d59218-8c4d-11ed-92e4-ebdb7ababdf6</Identifier>

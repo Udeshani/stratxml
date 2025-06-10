@@ -43,7 +43,8 @@
         <foreach target="convert" inheritall="true" param="file.name">
             <path>
                 <fileset dir="${input.dir}">
-                    <include name="input.xlsx"/>
+                    <include name="us_foreign_budget_complete.xlsx"/>
+
                 </fileset>
             </path>
         </foreach>
@@ -58,7 +59,7 @@
 
         <propertyregex property="filename"
                        input="${file.name}"
-                       regexp="(.*)/(.*).xlsx"
+                       regexp="(.*)\\(.*).xlsx"
                        select="\2"
                        casesensitive="false" />
 
@@ -79,7 +80,7 @@
                 <fileset dir="${lib.dir}/xmlcalabash-1.4.1-100/lib" includes="*.jar"/>
                 <path location="${lib.dir}/xmlcalabash-1.4.1-100/xmlcalabash-1.4.1-100.jar"/>
             </classpath>
-            <arg line='--with-param param@input="${file.name}"'/>
+            <arg line='--with-param param@input="../../../data/in/us_foreign_budget_complete.xlsx"'/>
             <arg line='--with-param param@output="../output/${filename}.xml"'/>
             <arg line='--with-param param@xsl="${xsl.entry.file}"'/>
             <arg line='"${xpl.file}"'/>
