@@ -14,6 +14,7 @@
                 xmlns:tps="http://www.typefi.com/ContentXML"
                 exclude-result-prefixes="#all">
 
+    <xsl:variable name="codes.doc" select="document('../../../../data/in/codes.xml')"/>
     <xsl:template match="tgroup">
         <xsl:param name="country-code" as="xs:string"/>
 
@@ -22,12 +23,10 @@
         <xsl:variable name="row-count" select="tps:get-row-count(.)" as="xs:integer"/>
         <Name>Model Performance Plan for International Assistance</Name>
         <Description>This is a model performance plan for international assistance based upon the international
-            assistance
-            codes and descriptions maintained by the U.S. Department of the Treasury
+            assistance codes and descriptions maintained by the U.S. Department of the Treasury
         </Description>
         <OtherInformation>[Submitter's Note: This StratML rendition was compiled from the source by ChatGPT and edited
-            in
-            the XForm at https://stratml.us/forms2/Part2Form.xml]
+            in the XForm at https://stratml.us/forms2/Part2Form.xml]
         </OtherInformation>
         <StrategicPlanCore>
             <Organization>
@@ -57,6 +56,9 @@
                 <Description/>
             </Value>
             <xsl:for-each-group select="$tgroup/tbody/row[entry[3] eq $country-code]" group-by="entry[15]">
+                <xsl:variable name="code" select="current-group()[1]/entry[15]"/>
+
+<!--                <xsl:variable name="cur-row" select="$tgroup/tbody/row[entry[3] eq $country-code][entry[15] eq $code][1]"/>-->
                 <xsl:variable name="goal-name" select="current-group()[1]/entry[16]"/>
                 <Goal>
 
@@ -65,7 +67,7 @@
                     </Name>
                     <Description>test</Description>
                     <Identifier>
-                        <xsl:value-of select="'_InternationalAidPurposeCode'||entry[17]"/>
+                        <xsl:value-of select="'_InternationalAidPurposeCode'||current-group()[1]/entry[17]"/>
                     </Identifier>
                     <SequenceIndicator/>
                     <Stakeholder>
@@ -77,7 +79,8 @@
                         </Role>
                     </Stakeholder>
                     <OtherInformation/>
-                 <xsl:apply-templates select="current-group()" mode="section"/>
+                 <xsl:apply-templates select="current-group()" mode="section">
+                 </xsl:apply-templates>
                 </Goal>
             </xsl:for-each-group>
         </StrategicPlanCore>
@@ -85,12 +88,14 @@
 
 
     <xsl:template match="row" mode="section">
+        <xsl:variable name="goal-name" select="."/>
+
             <xsl:variable name="cur-row" select="."/>
             <Objective>
                 <Name>
                     <xsl:value-of select="$goal-name"/>
                 </Name>
-                <Description>to be filled</Description>
+                <Description><xsl:value-of select="$codes.doc//row[normalize-space(entry[1]) eq normalize-space(current-group()[1]/entry[17])]/entry[5]"/></Description>
                 <Identifier>
                     <xsl:value-of select="'_InternationalAidPurposeCode'||$cur-row/entry[17]"/>
                 </Identifier>
@@ -137,8 +142,8 @@
                                         select="if($cur-row/entry[32] eq '18') then $cur-row/entry[35] else ''"/>
                             </NumberOfUnits>
                             <Descriptor>
-                                <DescriptorName></DescriptorName>
-                                <DescriptorValue></DescriptorValue>
+                                <DescriptorName>Status</DescriptorName>
+                                <DescriptorValue>Current Amount</DescriptorValue>
                             </Descriptor>
 
                             <Description></Description>
@@ -158,8 +163,8 @@
                                         select="if($cur-row/entry[32] eq '1') then $cur-row/entry[35] else ''"/>
                             </NumberOfUnits>
                             <Descriptor>
-                                <DescriptorName/>
-                                <DescriptorValue></DescriptorValue>
+                                <DescriptorName>Status</DescriptorName>
+                                <DescriptorValue>Constant Amount</DescriptorValue>
                             </Descriptor>
                             <Description>...</Description>
                         </ActualResult>

@@ -19,12 +19,6 @@
     <xsl:template name="main">
         <xsl:call-template name="parameters-info"/>
 
-        <xsl:if test="$debug">
-            <xsl:result-document href="input.xml">
-                <xsl:copy-of select="$worksheet"/>
-            </xsl:result-document>
-        </xsl:if>
-
         <xsl:call-template name="cxml-documents">
             <xsl:with-param name="main-content" select="$worksheet/element()"/>
 <!--            <xsl:with-param name="partnership" select="$partnerships/element()"/>-->
@@ -51,24 +45,10 @@
         </xsl:variable>-->
 
 
-       <!-- <xsl:variable name="vision-mission" as="document-node()">
-            <xsl:document>
-                <xsl:apply-templates select="$vision-mission" mode="xslx-to-cals"/>
-            </xsl:document>
-        </xsl:variable>-->
+<!--        <xsl:result-document href="final/codes.xml">-->
+<!--                <xsl:copy-of select="$cals-table-main"/>-->
 
-
-        <xsl:if test="$debug">
-           <!-- <xsl:result-document href="cals-table-partnership.xml">
-                <xsl:copy-of select="$cals-table-partnership"/>
-            </xsl:result-document>-->
-            <xsl:result-document href="cals-table-main.xml">
-                <xsl:copy-of select="$cals-table-main"/>
-            </xsl:result-document>
-        <!--    <xsl:result-document href="cals-table-vision-mission.xml">
-                <xsl:copy-of select="$vision-mission"/>
-            </xsl:result-document>-->
-        </xsl:if>
+<!--        </xsl:result-document>-->
 
         <xsl:call-template name="cxml-documents-content">
             <xsl:with-param name="main-content" select="$cals-table-main/element()" tunnel="yes"/>
