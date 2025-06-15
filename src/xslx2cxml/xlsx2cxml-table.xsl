@@ -11,7 +11,7 @@
                 xmlns="urn:ISO:std:iso:17469:tech:xsd:PerformancePlanOrReport"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                xmlns:tps="http://www.typefi.com/ContentXML"
+                xmlns:tps="http://www.typefi.com/ContentXML" xmlns:x="http://www.w3.org/1999/XSL/Transform"
                 exclude-result-prefixes="#all">
 
     <xsl:variable name="codes.doc" select="document('../../../../data/in/codes.xml')"/>
@@ -35,7 +35,19 @@
                 <Identifier>_InternationalAidPurposeCode5337e65c-3f06-11f0-813e-b6ae5fbabdf6</Identifier>
                 <Description/>
                 <Stakeholder StakeholderTypeType="Organization">
-                    <Name>U.S. Department of the Treasury</Name>
+                    <Name>
+                        <xsl:value-of select="$country-code"/>
+                    </Name>
+                    <Description/>
+                    <Role>
+                        <Name/>
+                        <Description/>
+                    </Role>
+                </Stakeholder>
+                <Stakeholder StakeholderTypeType="Generic_Group">
+                    <Name>
+                        <xsl:value-of select="$tgroup/tbody/row[entry[3] eq $country-code][1]/entry[5]"/>
+                    </Name>
                     <Description/>
                     <Role>
                         <Name/>
@@ -44,32 +56,33 @@
                 </Stakeholder>
             </Organization>
             <Vision>
-                <Description/>
+                <Description>Other countries and U.S. interests are served</Description>
                 <Identifier>_f157cf68-3f11-11f0-8133-747f61babdf6</Identifier>
             </Vision>
             <Mission>
-                <Description>To enable categorization of international assistance expenditures</Description>
+                <Description>To provide assistance to other countries</Description>
                 <Identifier>_f157d878-3f11-11f0-8133-747f61babdf6</Identifier>
             </Mission>
             <Value>
                 <Name/>
                 <Description/>
             </Value>
-            <xsl:for-each-group select="$tgroup/tbody/row[entry[3] eq $country-code]" group-by="entry[15]">
-                <xsl:variable name="code" select="current-group()[1]/entry[15]"/>
-
-<!--                <xsl:variable name="cur-row" select="$tgroup/tbody/row[entry[3] eq $country-code][entry[15] eq $code][1]"/>-->
-                <xsl:variable name="goal-name" select="current-group()[1]/entry[16]"/>
+            <xsl:for-each-group select="$tgroup/tbody/row[entry[3] eq $country-code]" group-by="entry[14]">
+                <xsl:variable name="goal-no" select="position()"/>
                 <Goal>
+                    <xsl:variable name="cur-row" select="current-group()[1]"/>
+                    <xsl:variable name="code" select="current-group()[1]/entry[15]"/>
 
+                    <!--                <xsl:variable name="cur-row" select="$tgroup/tbody/row[entry[3] eq $country-code][entry[15] eq $code][1]"/>-->
+                    <xsl:variable name="goal-name" select="$cur-row/entry[14]"/>
                     <Name>
                         <xsl:value-of select="$goal-name"/>
                     </Name>
                     <Description>test</Description>
                     <Identifier>
-                        <xsl:value-of select="'_InternationalAidPurposeCode'||current-group()[1]/entry[17]"/>
+                        <xsl:value-of select="'_InternationalAidPurposeCode'||$cur-row/entry[17]"/>
                     </Identifier>
-                    <SequenceIndicator/>
+                    <SequenceIndicator><xsl:value-of select="$goal-no"/></SequenceIndicator>
                     <Stakeholder>
                         <Name/>
                         <Description/>
@@ -78,143 +91,165 @@
                             <Description/>
                         </Role>
                     </Stakeholder>
-                    <OtherInformation/>
-                 <xsl:apply-templates select="current-group()" mode="section">
-                 </xsl:apply-templates>
+                    <OtherInformation><xsl:value-of select="$cur-row/entry[20]"/></OtherInformation>
+                    <xsl:for-each-group select="current-group()" group-by="entry[17]">
+                        <xsl:variable name="cur-row" select="current-group()[1]"/>
+                        <xsl:variable name="obj-no" select="position()"/>
+                        <Objective>
+                            <Name>
+                                <xsl:value-of select="$cur-row/entry[18]"/>
+                            </Name>
+                            <Description>
+                                <xsl:value-of
+                                        select="$codes.doc//row[normalize-space(entry[1]) eq normalize-space($cur-row/entry[17])]/entry[5]"/>
+                            </Description>
+                            <Identifier>
+                                <xsl:value-of select="'_InternationalAidPurposeCode'||$cur-row/entry[17]"/>
+                            </Identifier>
+                            <SequenceIndicator><xsl:value-of select="$goal-no||'.'||$obj-no"/></SequenceIndicator>
+                            <Stakeholder StakeholderTypeType="Organization">
+                                <Name><xsl:value-of select="$cur-row/entry[26]"/></Name>
+                                <Description>Funding agency</Description>
+                                <Role>
+                                    <Name/>
+                                    <Description/>
+                                </Role>
+                            </Stakeholder>
+                            <Stakeholder StakeholderTypeType="Generic_Group">
+                                <Name><xsl:value-of select="$cur-row/entry[16] || ' Sector'"/></Name>
+                                <Description>International Sector Name</Description>
+                                <Role>
+                                    <Name/>
+                                    <Description/>
+                                </Role>
+                            </Stakeholder>
+                            <Stakeholder StakeholderTypeType="Generic_Group">
+                                <Name><xsl:value-of select="$cur-row/entry[22] || ' Sector'"/></Name>
+                                <Description>US Sector Name</Description>
+                                <Role>
+                                    <Name/>
+                                    <Description/>
+                                </Role>
+                            </Stakeholder>
+                            <OtherInformation/>
+                            <PerformanceIndicator>
+                                <SequenceIndicator/>
+                                <MeasurementDimension/>
+                                <UnitOfMeasurement>$</UnitOfMeasurement>
+                                <Identifier>
+                                    <xsl:value-of select="generate-id(.)"/>
+                                </Identifier>
+                                <Relationship>
+                                    <Identifier>
+                                        <xsl:value-of select="generate-id(.)||'rel'"/>
+                                    </Identifier>
+                                    <ReferentIdentifier/>
+                                    <Name/>
+                                    <Description/>
+                                </Relationship>
+                                <xsl:apply-templates select="current-group()" mode="section">
+                                </xsl:apply-templates>
+                            </PerformanceIndicator>
+                        </Objective>
+
+                    </xsl:for-each-group>
                 </Goal>
             </xsl:for-each-group>
+
         </StrategicPlanCore>
     </xsl:template>
 
 
     <xsl:template match="row" mode="section">
-        <xsl:variable name="goal-name" select="."/>
+        <xsl:variable name="cur-row" select="."/>
 
-            <xsl:variable name="cur-row" select="."/>
-            <Objective>
-                <Name>
-                    <xsl:value-of select="$goal-name"/>
-                </Name>
-                <Description><xsl:value-of select="$codes.doc//row[normalize-space(entry[1]) eq normalize-space(current-group()[1]/entry[17])]/entry[5]"/></Description>
-                <Identifier>
-                    <xsl:value-of select="'_InternationalAidPurposeCode'||$cur-row/entry[17]"/>
-                </Identifier>
-                <SequenceIndicator/>
-                <Stakeholder>
-                    <Name/>
-                    <Description/>
-                    <Role>
-                        <Name/>
-                        <Description/>
-                    </Role>
-                </Stakeholder>
-                <OtherInformation/>
+        <MeasurementInstance>
+            <TargetResult>
+                <StartDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34] || '-10-01'"/>
+                </StartDate>
+                <EndDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34] || '-09-30'"/>
+                </EndDate>
+                <NumberOfUnits>
+                    <xsl:value-of
+                            select="if(normalize-space($cur-row/entry[32]) eq '18') then $cur-row/entry[35] else ''"/>
+                </NumberOfUnits>
+                <Descriptor>
+                    <DescriptorName>Status</DescriptorName>
+                    <DescriptorValue>Current Amount</DescriptorValue>
+                </Descriptor>
 
-                <PerformanceIndicator>
-                    <SequenceIndicator/>
-                    <MeasurementDimension/>
-                    <UnitOfMeasurement></UnitOfMeasurement>
-                    <Identifier>
-                        <xsl:value-of select="generate-id(.)||."/>
-                    </Identifier>
-                    <Relationship>
-                        <Identifier>
-                            <xsl:value-of select="generate-id(.)||'rel'||."/>
-                        </Identifier>
-                        <ReferentIdentifier/>
-                        <Name/>
-                        <Description/>
-                    </Relationship>
+                <Description></Description>
+            </TargetResult>
 
+            <ActualResult>
+                <StartDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34]  || '-10-01'"/>
+                </StartDate>
+                <EndDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34] || '-09-31'"/>
+                </EndDate>
+                <NumberOfUnits>
+                    <xsl:value-of
+                            select="if(normalize-space($cur-row/entry[32]) eq '1') then $cur-row/entry[35] else ''"/>
+                </NumberOfUnits>
+                <Descriptor>
+                    <DescriptorName>Status</DescriptorName>
+                    <DescriptorValue>Constant Amount</DescriptorValue>
+                </Descriptor>
+                <Description>...</Description>
+            </ActualResult>
+        </MeasurementInstance>
+        <MeasurementInstance>
+            <TargetResult>
+                <StartDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34] || '-01-01'"/>
+                </StartDate>
+                <EndDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34] || '-12-31'"/>
+                </EndDate>
+                <NumberOfUnits>
+                    <xsl:value-of
+                            select="if(normalize-space($cur-row/entry[32]) eq '18') then $cur-row/entry[36] else ''"/>
+                </NumberOfUnits>
+                <Descriptor>
+                    <DescriptorName></DescriptorName>
+                    <DescriptorValue></DescriptorValue>
+                </Descriptor>
 
-                    <MeasurementInstance>
-                        <TargetResult>
-                            <StartDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34] || '-01-01'"/>
-                            </StartDate>
-                            <EndDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34] || '-12-31'"/>
-                            </EndDate>
-                            <NumberOfUnits>
-                                <xsl:value-of
-                                        select="if($cur-row/entry[32] eq '18') then $cur-row/entry[35] else ''"/>
-                            </NumberOfUnits>
-                            <Descriptor>
-                                <DescriptorName>Status</DescriptorName>
-                                <DescriptorValue>Current Amount</DescriptorValue>
-                            </Descriptor>
+                <Description></Description>
+            </TargetResult>
 
-                            <Description></Description>
-                        </TargetResult>
+            <ActualResult>
+                <StartDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34]  || '-01-01'"/>
+                </StartDate>
+                <EndDate>
+                    <xsl:value-of
+                            select="$cur-row/entry[34] || '-12-31'"/>
+                </EndDate>
+                <NumberOfUnits>
+                    <xsl:value-of
+                            select="if(normalize-space($cur-row/entry[32]) eq '1') then $cur-row/entry[36] else ''"/>
+                </NumberOfUnits>
+                <Descriptor>
+                    <DescriptorName/>
+                    <DescriptorValue></DescriptorValue>
+                </Descriptor>
+                <Description>...</Description>
+            </ActualResult>
+        </MeasurementInstance>
 
-                        <ActualResult>
-                            <StartDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34]  || '-01-01'"/>
-                            </StartDate>
-                            <EndDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34] || '-12-31'"/>
-                            </EndDate>
-                            <NumberOfUnits>
-                                <xsl:value-of
-                                        select="if($cur-row/entry[32] eq '1') then $cur-row/entry[35] else ''"/>
-                            </NumberOfUnits>
-                            <Descriptor>
-                                <DescriptorName>Status</DescriptorName>
-                                <DescriptorValue>Constant Amount</DescriptorValue>
-                            </Descriptor>
-                            <Description>...</Description>
-                        </ActualResult>
-                    </MeasurementInstance>
-                    <MeasurementInstance>
-                        <TargetResult>
-                            <StartDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34] || '-01-01'"/>
-                            </StartDate>
-                            <EndDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34] || '-12-31'"/>
-                            </EndDate>
-                            <NumberOfUnits>
-                                <xsl:value-of
-                                        select="if($cur-row/entry[32] eq '18') then $cur-row/entry[36] else ''"/>
-                            </NumberOfUnits>
-                            <Descriptor>
-                                <DescriptorName></DescriptorName>
-                                <DescriptorValue></DescriptorValue>
-                            </Descriptor>
+        <OtherInformation/>
 
-                            <Description></Description>
-                        </TargetResult>
-
-                        <ActualResult>
-                            <StartDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34]  || '-01-01'"/>
-                            </StartDate>
-                            <EndDate>
-                                <xsl:value-of
-                                        select="$cur-row/entry[34] || '-12-31'"/>
-                            </EndDate>
-                            <NumberOfUnits>
-                                <xsl:value-of
-                                        select="if($cur-row/entry[32] eq '1') then $cur-row/entry[36] else ''"/>
-                            </NumberOfUnits>
-                            <Descriptor>
-                                <DescriptorName/>
-                                <DescriptorValue></DescriptorValue>
-                            </Descriptor>
-                            <Description>...</Description>
-                        </ActualResult>
-                    </MeasurementInstance>
-
-                    <OtherInformation/>
-                </PerformanceIndicator>
-            </Objective>
     </xsl:template>
 
     <xsl:template match="tgroup" mode="version1">

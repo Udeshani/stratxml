@@ -78,7 +78,7 @@
 
 <!--            <xsl:variable name="filename" select="replace(replace(replace($main-content//tgroup/tbody/row[$cur-row]/entry[3], ' ', '_'), ',|\.', ''), $single-quote ,'')"/>-->
 
-            <xsl:result-document href="final/{$cur-country}.xml">
+            <xsl:result-document href="final/US_Assistance_to_{$cur-country}.xml">
                 <xsl:processing-instruction name="xml-stylesheet">
                     <xsl:text>type="text/xsl" href="part2stratml.xsl"</xsl:text>
                 </xsl:processing-instruction>

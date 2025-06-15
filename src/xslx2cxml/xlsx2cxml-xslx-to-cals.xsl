@@ -65,34 +65,33 @@
 
 
     <xsl:template match="e:c" mode="xslx-to-cals">
-        <xsl:variable name="style-index" select="@s" as="xs:integer?"/>
-        <xsl:variable name="valign" select="tps:get-valign($style-index)" as="xs:string?"/>
-        <xsl:variable name="align" select="tps:get-align($style-index)" as="xs:string?"/>
-        <xsl:variable name="rotation" select="tps:get-rotation($style-index)" as="xs:string?"/>
+        <xsl:variable name="prev-r" select="replace(preceding-sibling::e:c[1]/@r, '\d', '')" as="xs:string?"/>
+        <xsl:variable name="cur-r" select="replace(@r, '\d', '')" as="xs:string?"/>
+        <xsl:variable name="cur-col"
+                      select="substring($cur-r, if (string-length($cur-r) eq 1) then 1 else string-length($cur-r), 1)"
+                      as="xs:string"/>
+        <xsl:variable name="prev-col"
+                      select="if ($prev-r) then substring($prev-r, if(string-length($prev-r) eq 1) then 1 else string-length($prev-r), 1) else $cur-col"
+                      as="xs:string"/>
 
+        <xsl:variable name="difference" select="string-to-codepoints($cur-col) - string-to-codepoints($prev-col)"
+                      as="xs:integer"/>
 
+        <xsl:for-each select="1 to (if($difference ge 0) then $difference - 1 else $difference + 25)">
             <entry type="normal">
-                <xsl:call-template name="namest"/>
-                <xsl:call-template name="nameend"/>
-                <xsl:attribute name="align" select="($align[$align], 'left')[1]"/>
-                <xsl:attribute name="valign" select="($valign[$valign], 'bottom')[1]"/>
-
-                <xsl:if test="$rotation">
-                    <xsl:attribute name="rotate" select="$rotation"/>
-                </xsl:if>
-
-                <xsl:choose>
-                    <xsl:when test="tps:get-style(@s)">
-                        <xsl:processing-instruction name="style" select="tps:get-style(@s)"/>
-                        <xsl:apply-templates/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:apply-templates/>
-                    </xsl:otherwise>
-                </xsl:choose>
-
-                <xsl:apply-templates select="@s" mode="#current"/>
+                <xsl:attribute name="align" select="'left'"/>
+                <xsl:attribute name="valign" select="'bottom'"/>
             </entry>
+        </xsl:for-each>
+
+        <entry type="normal">
+            <xsl:call-template name="namest"/>
+            <xsl:call-template name="nameend"/>
+            <xsl:attribute name="align" select="'left'"/>
+            <xsl:attribute name="valign" select="'bottom'"/>
+
+            <xsl:apply-templates mode="#current"/>
+        </entry>
 
     </xsl:template>
 

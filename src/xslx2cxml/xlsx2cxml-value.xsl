@@ -14,7 +14,7 @@
                 xmlns:e="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
                 exclude-result-prefixes="#all">
 
-    <xsl:template match="e:v">
+    <xsl:template match="e:v" mode="xslx-to-cals">
         <xsl:variable name="style-index" select="ancestor::e:c/@s" as="xs:integer?"/>
         <xsl:variable name="is-shared-string" select="parent::e:c/@t eq 's'" as="xs:boolean?"/>
 
