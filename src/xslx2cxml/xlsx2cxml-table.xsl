@@ -21,13 +21,9 @@
         <xsl:variable name="tgroup" select="."/>
 
         <xsl:variable name="row-count" select="tps:get-row-count(.)" as="xs:integer"/>
-        <Name>Model Performance Plan for International Assistance</Name>
-        <Description>This is a model performance plan for international assistance based upon the international
-            assistance codes and descriptions maintained by the U.S. Department of the Treasury
-        </Description>
-        <OtherInformation>[Submitter's Note: This StratML rendition was compiled from the source by ChatGPT and edited
-            in the XForm at https://stratml.us/forms2/Part2Form.xml]
-        </OtherInformation>
+        <Name>U.S. Assistance to Afghanistan</Name>
+        <Description>This is a StratML rendition of the President's budget request for U.S. assistance.</Description>
+        <OtherInformation>[Submitter's Note: This StratML rendition was compiled from the source by Gayanthika Udeshani.]</OtherInformation>
         <StrategicPlanCore>
             <Organization>
                 <Name>U.S. Government</Name>
@@ -56,7 +52,7 @@
                 </Stakeholder>
             </Organization>
             <Vision>
-                <Description>Other countries and U.S. interests are served</Description>
+                <Description>Other countries are supported and U.S. interests are served</Description>
                 <Identifier>_f157cf68-3f11-11f0-8133-747f61babdf6</Identifier>
             </Vision>
             <Mission>
@@ -175,7 +171,7 @@
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '18') then $cur-row/entry[35] else ''"/>
+                            select="if(normalize-space($cur-row/entry[32]) eq '18') then format-number($cur-row/entry[35], '#') else ''"/>
                 </NumberOfUnits>
                 <Descriptor>
                     <DescriptorName>Status</DescriptorName>
@@ -192,11 +188,11 @@
                 </StartDate>
                 <EndDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-09-31'"/>
+                            select="$cur-row/entry[34] || '-09-30'"/>
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '1') then $cur-row/entry[35] else ''"/>
+                            select="if(normalize-space($cur-row/entry[32]) eq '1') then format-number($cur-row/entry[35], '#') else ''"/>
                 </NumberOfUnits>
                 <Descriptor>
                     <DescriptorName>Status</DescriptorName>
@@ -209,15 +205,15 @@
             <TargetResult>
                 <StartDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-01-01'"/>
+                            select="$cur-row/entry[34] || '-10-01'"/>
                 </StartDate>
                 <EndDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-12-31'"/>
+                            select="$cur-row/entry[34] || '-09-30'"/>
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '18') then $cur-row/entry[36] else ''"/>
+                            select="if(normalize-space($cur-row/entry[32]) eq '18') then format-number($cur-row/entry[36], '#') else ''"/>
                 </NumberOfUnits>
                 <Descriptor>
                     <DescriptorName></DescriptorName>
@@ -230,15 +226,15 @@
             <ActualResult>
                 <StartDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34]  || '-01-01'"/>
+                            select="$cur-row/entry[34]  || '-10-01'"/>
                 </StartDate>
                 <EndDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-12-31'"/>
+                            select="$cur-row/entry[34] || '-09-30'"/>
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '1') then $cur-row/entry[36] else ''"/>
+                            select="if(normalize-space($cur-row/entry[32]) eq '1') then format-number($cur-row/entry[36], '#') else ''"/>
                 </NumberOfUnits>
                 <Descriptor>
                     <DescriptorName/>

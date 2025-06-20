@@ -96,7 +96,7 @@
                         <StartDate>2022-07-01</StartDate>
                         <EndDate>2023-06-30</EndDate>
                         <PublicationDate>2025-02-21</PublicationDate>
-                        <Source>https://www.cato.org/sites/cato.org/files/human-freedom-index-files/human-freedom-index-data-2024.xlsx</Source>
+                        <Source>https://s3.amazonaws.com/files.explorer.devtechlab.com/us_foreign_budget_complete.xlsx</Source>
                     </AdministrativeInformation>
                     <Submitter>
                         <Identifier>_a7d59218-8c4d-11ed-92e4-ebdb7ababdf6</Identifier>
