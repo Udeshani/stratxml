@@ -72,8 +72,8 @@
 <!--            </urlset>-->
 <!--        </xsl:result-document>-->
 
-<!--        <xsl:for-each select="distinct-values($main-content//tgroup/tbody/row/entry[3])[2]">-->
-            <xsl:variable name="cur-country" select="$main-content//tgroup/tbody/row[2]/entry[3]"/>
+        <xsl:for-each select="distinct-values($main-content//tgroup/tbody/row/entry[3])">
+            <xsl:variable name="cur-country" select="."/>
 <xsl:message select="$cur-country"/>
 
 <!--            <xsl:variable name="filename" select="replace(replace(replace($main-content//tgroup/tbody/row[$cur-row]/entry[3], ' ', '_'), ',|\.', ''), $single-quote ,'')"/>-->
@@ -108,7 +108,7 @@
                 </PerformancePlanOrReport>
             </xsl:result-document>
 
-<!--        </xsl:for-each>-->
+       </xsl:for-each>
 
         <Submitter>
             <Identifier>_a7d59218-8c4d-11ed-92e4-ebdb7ababdf6</Identifier>

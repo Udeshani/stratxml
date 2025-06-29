@@ -32,6 +32,19 @@
     <xsl:variable name="cell.range" select="$worksheet//e:dimension/@ref" as="xs:string?"/>
     <xsl:variable name="cols" select="$worksheet/e:cols" as="element(e:cols)?"/>
 
+    <xsl:variable name="goals" as="map(xs:string, xs:string)">
+        <xsl:map>
+            <xsl:map-entry key="'Education'" select="'Advance education'"/>
+            <xsl:map-entry key="'HealthandPopulation'" select="'Advance population policies/programs and health'"/>
+            <xsl:map-entry key="'Agriculture'" select="'Advance agriculture and Agricultural policy and administrative management'"/>
+            <xsl:map-entry key="'Humanitarian'" select="'Advance measures to co-ordinate the assessment and safe delivery of humanitarian aid'"/>
+            <xsl:map-entry key="'Other'" select="'Environmental policy and administrative management and the multisector aid'"/>
+            <xsl:map-entry key="'Governance'" select="'Advance technical co-operation provided to parliament, government ministries, law enforcement agencies and the judiciary to assist review and reform of the security system to improve democratic governance and civilian control'"/>
+            <xsl:map-entry key="'Infrastructure'" select="'Advance other social infrastructure and services'"/>
+            <xsl:map-entry key="'EconomicGrowth'" select="'Economic Development Planning'"/>
+            <xsl:map-entry key="'AdministrativeCosts'" select="'Administrative costs such as Program Design and Learning'"/>
+        </xsl:map>
+    </xsl:variable>
 
     <xsl:variable name="format.codes" as="map(xs:integer, xs:string)">
         <xsl:map>

@@ -23,7 +23,7 @@
         <xsl:variable name="row-count" select="tps:get-row-count(.)" as="xs:integer"/>
         <Name>U.S. Assistance to Afghanistan</Name>
         <Description>This is a StratML rendition of the President's budget request for U.S. assistance.</Description>
-        <OtherInformation>[Submitter's Note: This StratML rendition was compiled from the source by Gayanthika Udeshani.]</OtherInformation>
+        <OtherInformation>[Submitter's Note: The figures shown are current amounts.  The constant amounts are adjusted for inflation. This StratML rendition was compiled from the source by Gayanthika Udeshani.]</OtherInformation>
         <StrategicPlanCore>
             <Organization>
                 <Name>U.S. Government</Name>
@@ -70,11 +70,11 @@
                     <xsl:variable name="code" select="current-group()[1]/entry[15]"/>
 
                     <!--                <xsl:variable name="cur-row" select="$tgroup/tbody/row[entry[3] eq $country-code][entry[15] eq $code][1]"/>-->
-                    <xsl:variable name="goal-name" select="$cur-row/entry[14]"/>
+                    <xsl:variable name="goal-name" select="$cur-row/entry[14]=>normalize-space()"/>
                     <Name>
                         <xsl:value-of select="$goal-name"/>
                     </Name>
-                    <Description>test</Description>
+                    <Description><xsl:value-of select="$goals($goal-name=>replace(' ', ''))[1]"/></Description>
                     <Identifier>
                         <xsl:value-of select="'_InternationalAidPurposeCode'||$cur-row/entry[17]"/>
                     </Identifier>
@@ -178,7 +178,11 @@
                     <DescriptorValue>Current Amount</DescriptorValue>
                 </Descriptor>
 
-                <Description></Description>
+                <Description>
+                    <xsl:value-of
+                            select="if(normalize-space($cur-row/entry[32]) eq '1') then 'Constant Amount = ' || format-number($cur-row/entry[35], '#') else ''"/>
+
+                </Description>
             </TargetResult>
 
             <ActualResult>
@@ -216,11 +220,14 @@
                             select="if(normalize-space($cur-row/entry[32]) eq '18') then format-number($cur-row/entry[36], '#') else ''"/>
                 </NumberOfUnits>
                 <Descriptor>
-                    <DescriptorName></DescriptorName>
-                    <DescriptorValue></DescriptorValue>
+                    <DescriptorName>Status</DescriptorName>
+                    <DescriptorValue>Current Amount</DescriptorValue>
                 </Descriptor>
 
-                <Description></Description>
+                <Description>
+                    <xsl:value-of
+                            select="if(normalize-space($cur-row/entry[32]) eq '1') then 'Constant Amount = ' || format-number($cur-row/entry[36], '#') else ''"/>
+                </Description>
             </TargetResult>
 
             <ActualResult>
@@ -237,8 +244,8 @@
                             select="if(normalize-space($cur-row/entry[32]) eq '1') then format-number($cur-row/entry[36], '#') else ''"/>
                 </NumberOfUnits>
                 <Descriptor>
-                    <DescriptorName/>
-                    <DescriptorValue></DescriptorValue>
+                    <DescriptorName>Status</DescriptorName>
+                    <DescriptorValue>Constant Amount</DescriptorValue>
                 </Descriptor>
                 <Description>...</Description>
             </ActualResult>
