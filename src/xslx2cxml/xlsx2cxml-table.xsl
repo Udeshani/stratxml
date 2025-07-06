@@ -128,9 +128,9 @@
                                 </Role>
                             </Stakeholder>
                             <OtherInformation/>
-                            <PerformanceIndicator>
-                                <SequenceIndicator/>
-                                <MeasurementDimension/>
+                            <PerformanceIndicator ValueChainStage="Input" PerformanceIndicatorType="Quantitative">
+                                <SequenceIndicator><xsl:value-of select="$goal-no||'.'||$obj-no||'.1'"/></SequenceIndicator>
+                                <MeasurementDimension>Funding</MeasurementDimension>
                                 <UnitOfMeasurement>$</UnitOfMeasurement>
                                 <Identifier>
                                     <xsl:value-of select="generate-id(.)"/>
@@ -160,6 +160,7 @@
         <xsl:variable name="cur-row" select="."/>
 
         <MeasurementInstance>
+            <xsl:if test="normalize-space($cur-row/entry[32]) eq '18'">
             <TargetResult>
                 <StartDate>
                     <xsl:value-of
@@ -171,20 +172,21 @@
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '18') then format-number($cur-row/entry[35], '#') else ''"/>
+                            select="format-number($cur-row/entry[35], '#')"/>
                 </NumberOfUnits>
                 <Descriptor>
                     <DescriptorName>Status</DescriptorName>
-                    <DescriptorValue>Current Amount</DescriptorValue>
+                    <DescriptorValue>Budget Request</DescriptorValue>
                 </Descriptor>
 
                 <Description>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '1') then 'Constant Amount = ' || format-number($cur-row/entry[35], '#') else ''"/>
+                            select="$cur-row/entry[31] || '|' || 'Constant Amount = ' || format-number($cur-row/entry[36], '#')"/>
 
                 </Description>
             </TargetResult>
-
+            </xsl:if>
+            <xsl:if test="normalize-space($cur-row/entry[32]) eq '1'">
             <ActualResult>
                 <StartDate>
                     <xsl:value-of
@@ -196,61 +198,22 @@
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '1') then format-number($cur-row/entry[35], '#') else ''"/>
+                            select="format-number($cur-row/entry[35], '#')"/>
                 </NumberOfUnits>
                 <Descriptor>
                     <DescriptorName>Status</DescriptorName>
-                    <DescriptorValue>Constant Amount</DescriptorValue>
+                    <DescriptorValue>Appropriated &amp; Planned</DescriptorValue>
                 </Descriptor>
-                <Description>...</Description>
-            </ActualResult>
-        </MeasurementInstance>
-        <MeasurementInstance>
-            <TargetResult>
-                <StartDate>
-                    <xsl:value-of
-                            select="$cur-row/entry[34] || '-10-01'"/>
-                </StartDate>
-                <EndDate>
-                    <xsl:value-of
-                            select="$cur-row/entry[34] || '-09-30'"/>
-                </EndDate>
-                <NumberOfUnits>
-                    <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '18') then format-number($cur-row/entry[36], '#') else ''"/>
-                </NumberOfUnits>
-                <Descriptor>
-                    <DescriptorName>Status</DescriptorName>
-                    <DescriptorValue>Current Amount</DescriptorValue>
-                </Descriptor>
-
                 <Description>
-                    <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '1') then 'Constant Amount = ' || format-number($cur-row/entry[36], '#') else ''"/>
+                    <Description>
+                        <xsl:value-of
+                                select="$cur-row/entry[31] || '|' ||'Constant Amount = ' || format-number($cur-row/entry[36], '#')"/>
+
+                    </Description>
                 </Description>
-            </TargetResult>
-
-            <ActualResult>
-                <StartDate>
-                    <xsl:value-of
-                            select="$cur-row/entry[34]  || '-10-01'"/>
-                </StartDate>
-                <EndDate>
-                    <xsl:value-of
-                            select="$cur-row/entry[34] || '-09-30'"/>
-                </EndDate>
-                <NumberOfUnits>
-                    <xsl:value-of
-                            select="if(normalize-space($cur-row/entry[32]) eq '1') then format-number($cur-row/entry[36], '#') else ''"/>
-                </NumberOfUnits>
-                <Descriptor>
-                    <DescriptorName>Status</DescriptorName>
-                    <DescriptorValue>Constant Amount</DescriptorValue>
-                </Descriptor>
-                <Description>...</Description>
             </ActualResult>
+            </xsl:if>
         </MeasurementInstance>
-
         <OtherInformation/>
 
     </xsl:template>
