@@ -143,8 +143,46 @@
                                     <Name/>
                                     <Description/>
                                 </Relationship>
-                                <xsl:apply-templates select="current-group()" mode="section">
-                                </xsl:apply-templates>
+
+                                <xsl:variable name="year-group" as="element(row)*">
+                                    <xsl:perform-sort select="current-group()">
+                                        <xsl:sort select="entry[34]" data-type="number"/>
+                                    </xsl:perform-sort>
+                                </xsl:variable>
+
+                                <xsl:for-each-group select="$year-group" group-by="entry[34]">
+                                    <xsl:for-each-group select="current-group()" group-by="entry[31]">
+                                        <xsl:variable name="target_results">
+                                            <xsl:copy-of select="current-group()[normalize-space(entry[32]) eq '18']"/>
+                                        </xsl:variable>
+
+                                        <xsl:variable name="actual_results">
+                                            <xsl:copy-of select="current-group()[normalize-space(entry[32]) eq '1']"/>
+                                        </xsl:variable>
+
+                                        <xsl:variable name="max_size" select="if (count($target_results/row)  gt count($actual_results/row)) then count($target_results/row) else count($actual_results/row)"/>
+
+                                        <xsl:for-each select="1 to $max_size">
+                                            <xsl:variable name="pos" select="."/>
+
+                                            <MeasurementInstance>
+                                                <xsl:if test="$pos le count($target_results/row)">
+                                                    <xsl:apply-templates select="$target_results/row[$pos]" mode="target">
+                                                        <xsl:with-param name="is-dummy" select="(count($target_results/row) gt count($actual_results/row)) and ($pos gt count($actual_results/row))"/>
+                                                    </xsl:apply-templates>
+                                                </xsl:if>
+                                                <xsl:if test="$pos le count($actual_results/row)">
+                                                    <xsl:apply-templates select="$actual_results/row[$pos]" mode="actual">
+                                                        <xsl:with-param name="is-dummy" select="(count($actual_results/row) gt count($target_results/row)) and ($pos gt count($target_results/row))"/>
+                                                    </xsl:apply-templates>
+                                                </xsl:if>
+
+                                            </MeasurementInstance>
+                                        </xsl:for-each>
+
+                                    </xsl:for-each-group>
+                                </xsl:for-each-group>
+
                             </PerformanceIndicator>
                         </Objective>
 
@@ -156,19 +194,19 @@
     </xsl:template>
 
 
-    <xsl:template match="row" mode="section">
+    <xsl:template match="row" mode="target">
+        <xsl:param name="is-dummy"  as="xs:boolean"/>
+
         <xsl:variable name="cur-row" select="."/>
 
-        <MeasurementInstance>
-            <xsl:if test="normalize-space($cur-row/entry[32]) eq '18'">
             <TargetResult>
                 <StartDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-10-01'"/>
+                            select="xs:integer($cur-row/entry[34]) - 1 || '-10-01'"/>
                 </StartDate>
                 <EndDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-09-30'"/>
+                            select="xs:integer($cur-row/entry[34]) || '-09-30'"/>
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
@@ -185,16 +223,62 @@
 
                 </Description>
             </TargetResult>
-            </xsl:if>
-            <xsl:if test="normalize-space($cur-row/entry[32]) eq '1'">
+
+        <xsl:if test="$is-dummy">
             <ActualResult>
                 <StartDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34]  || '-10-01'"/>
+                            select="xs:integer($cur-row/entry[34])-1  || '-10-01'"/>
                 </StartDate>
                 <EndDate>
                     <xsl:value-of
-                            select="$cur-row/entry[34] || '-09-30'"/>
+                            select="xs:integer($cur-row/entry[34]) || '-09-30'"/>
+                </EndDate>
+                <NumberOfUnits>0</NumberOfUnits>
+                <Descriptor>
+                    <DescriptorName>Status</DescriptorName>
+                    <DescriptorValue>Appropriated &amp; Planned</DescriptorValue>
+                </Descriptor>
+                <Description></Description>
+            </ActualResult>
+
+        </xsl:if>
+    </xsl:template>
+
+
+    <xsl:template match="row" mode="actual">
+        <xsl:param name="is-dummy"  as="xs:boolean"/>
+
+        <xsl:variable name="cur-row" select="."/>
+
+        <xsl:if test="$is-dummy">
+            <TargetResult>
+                <StartDate>
+                    <xsl:value-of
+                            select="xs:integer($cur-row/entry[34]) - 1 || '-10-01'"/>
+                </StartDate>
+                <EndDate>
+                    <xsl:value-of
+                            select="xs:integer($cur-row/entry[34]) || '-09-30'"/>
+                </EndDate>
+                <NumberOfUnits>0</NumberOfUnits>
+                <Descriptor>
+                    <DescriptorName>Status</DescriptorName>
+                    <DescriptorValue>Budget Request</DescriptorValue>
+                </Descriptor>
+
+                <Description></Description>
+            </TargetResult>
+        </xsl:if>
+
+            <ActualResult>
+                <StartDate>
+                    <xsl:value-of
+                            select="xs:integer($cur-row/entry[34])-1  || '-10-01'"/>
+                </StartDate>
+                <EndDate>
+                    <xsl:value-of
+                            select="xs:integer($cur-row/entry[34]) || '-09-30'"/>
                 </EndDate>
                 <NumberOfUnits>
                     <xsl:value-of
@@ -205,16 +289,10 @@
                     <DescriptorValue>Appropriated &amp; Planned</DescriptorValue>
                 </Descriptor>
                 <Description>
-                    <Description>
-                        <xsl:value-of
-                                select="$cur-row/entry[31] || '|' ||'Constant Amount = ' || format-number($cur-row/entry[36], '#')"/>
-
-                    </Description>
+                    <xsl:value-of
+                            select="$cur-row/entry[31] || '|' ||'Constant Amount = ' || format-number($cur-row/entry[36], '#')"/>
                 </Description>
             </ActualResult>
-            </xsl:if>
-        </MeasurementInstance>
-        <OtherInformation/>
 
     </xsl:template>
 
